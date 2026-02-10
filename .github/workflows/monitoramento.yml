@@ -1,0 +1,27 @@
+name: Monitoramento Atibainha
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # a cada 15 minutos
+  workflow_dispatch:
+
+jobs:
+  monitoramento:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Executar monitoramento
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        run: python monitoramento.py
