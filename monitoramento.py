@@ -21,7 +21,7 @@ def verificar_chuva():
         mensagem = f"📊 *Monitoramento Atibainha*\nData: {agora}\nPrevisão: {chuva_prevista}mm"
 
         # AQUI ESTAVA O ERRO: Agora a frase está fechada corretamente com aspas
-        if chuva_prevista > 0:
+        if True:
             mensagem += "\n\n⚠️ *ALERTA:* Chuva detectada!"
             enviar_telegram(mensagem)
         
