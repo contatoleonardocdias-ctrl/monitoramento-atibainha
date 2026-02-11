@@ -6,28 +6,42 @@ from datetime import datetime
 LATITUDE = -23.175636
 LONGITUDE = -46.393416
 
-# O código busca os valores que você salvou nas "etiquetas" do GitHub
+# Busca os valores nos Secrets do GitHub
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 def verificar_chuva():
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&hourly=precipitation&forecast_days=1"
+    # URL atualizada para pegar tempo real (current) e previsão (hourly)
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&current=precipitation&hourly=precipitation&forecast_days=1"
     
     try:
         response = requests.get(url)
         data = response.json()
         
+        # 1. Chuva acontecendo AGORA (Tempo Real)
+        chuva_agora = data['current']['precipitation']
+        
+        # 2. Chuva prevista para a PRÓXIMA HORA
         chuva_prevista = data['hourly']['precipitation'][0]
+        
         agora = datetime.now().strftime('%d/%m/%Y %H:%M')
         
-        mensagem = f"📊 *Monitoramento Atibainha*\nData: {agora}\nPrevisão: {chuva_prevista}mm"
-
-        # TESTE: Alterado para True para forçar o envio da notificação agora
-        if True:
-            mensagem += "\n\n🚀 *TESTE DE SISTEMA:* O robô está funcionando!"
+        # Se estiver chovendo agora OU houver previsão de chuva
+        if chuva_agora > 0 or chuva_prevista > 0:
+            mensagem = f"⚠️ *ALERTA DE CHUVA - ATIBAINHA*\n\n"
+            
+            if chuva_agora > 0:
+                mensagem += f"🌧 *Tempo Real:* Está chovendo {chuva_agora}mm agora!\n"
+            
+            if chuva_prevista > 0:
+                mensagem += f"📅 *Previsão:* Esperado {chuva_prevista}mm para a próxima hora.\n"
+                
+            mensagem += f"\n⏰ Verificação: {agora}"
+            
             enviar_telegram(mensagem)
-        
-        print(f"Sucesso: {mensagem}")
+            print(f"Alerta enviado! Real: {chuva_agora}mm / Previsto: {chuva_prevista}mm")
+        else:
+            print(f"Céu limpo em Atibainha ({agora}). Sem chuva no momento ou na previsão.")
 
     except Exception as e:
         print(f"Erro ao verificar: {e}")
@@ -40,11 +54,9 @@ def enviar_telegram(mensagem):
             "text": mensagem,
             "parse_mode": "Markdown"
         }
-        response = requests.post(url, json=payload)
-        if response.status_code != 200:
-            print(f"Erro no Telegram: {response.text}")
+        requests.post(url, json=payload)
     else:
-        print("Erro: TELEGRAM_TOKEN ou CHAT_ID não encontrados nos Secrets!")
+        print("Erro: Verifique seus Secrets (TELEGRAM_TOKEN e CHAT_ID).")
 
 if __name__ == "__main__":
     verificar_chuva()
