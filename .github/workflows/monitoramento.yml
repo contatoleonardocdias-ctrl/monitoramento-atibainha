@@ -4,7 +4,7 @@ on:
   schedule:
     # O cron abaixo roda a cada 1 hora (no minuto 0)
     # 0 * * * * significa: minuto 0, de todas as horas, todos os dias.
-    - cron: '0 * * * *'
+    - cron: '15 * * * *'
   workflow_dispatch: # Isso permite que você rode o script manualmente para testar
 
 jobs:
