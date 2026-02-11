@@ -4,7 +4,7 @@ on:
   schedule:
     # O cron abaixo roda a cada 1 hora (no minuto 0)
     # Se quiser mudar para cada 15 min, use: '*/15 * * * *'
-    - cron: '*/30 * * * *'
+    - cron: '0 * * * *'
   workflow_dispatch: # Permite rodar manualmente na aba Actions
 
 jobs:
