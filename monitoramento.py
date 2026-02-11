@@ -9,8 +9,8 @@ LOCAL = "Barragem Atibainha - Nazaré Paulista - São Paulo"
 LIMITE_ATENCAO = 2.0  # mm de chuva
 
 # Pega as chaves que você salvou no GitHub Secrets
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+TELEGRAM_TOKEN = os.getenv("8468573418:AAErjAXPUDXAwRHVdLvhf6JinSOfTJFj-VA")
+CHAT_ID = os.getenv("2038317249")
 
 def verificar_chuva():
     # Consulta a API de previsão do tempo
