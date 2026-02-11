@@ -33,8 +33,15 @@ def verificar_chuva():
         # Horário para o log/mensagem
         data_formatada = datetime.now().strftime('%d/%m/%Y %H:%M')
         
-        if True:
-            mensagem = "✅ O bot está vivo e conectado!"
+        if chuva_agora > 0 or chuva_proxima_hora > 0:
+            mensagem = f"⚠️ *ALERTA DE CHUVA - ATIBAINHA*\n\n"
+            
+            if chuva_agora > 0:
+                mensagem += f"🌧 *Tempo Real:* Está chovendo {chuva_agora}mm agora!\n"
+            
+            if chuva_proxima_hora > 0:
+                mensagem += f"📅 *Previsão:* Esperado {chuva_proxima_hora}mm para a próxima hora.\n"
+                
             enviar_telegram(mensagem)           
             print(f"Alerta enviado! {data_formatada}")
                 
