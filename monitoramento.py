@@ -36,7 +36,7 @@ def verificar_chuva():
         if True:
             mensagem = "✅ O bot está vivo e conectado!"
             enviar_telegram(mensagem)           
-            print(f"Alerta enviado! {data_formatada}"
+            print(f"Alerta enviado! {data_formatada}")
                 
             mensagem += f"\n⏰ Atualizado em: {data_formatada}"
             
