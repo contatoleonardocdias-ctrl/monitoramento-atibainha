@@ -27,7 +27,7 @@ def verificar_chuva():
         data_formatada = agora_sp.strftime('%d/%m/%Y %H:%M')
         
         # IMPORTANTE: Mude para 'if True:' se quiser forçar um teste agora
-        if chuva_agora > 0 or chuva_prevista > 0:
+        if True:
             mensagem = f"⚠️ *ALERTA DE CHUVA - ATIBAINHA*\n\n"
             
             if chuva_agora > 0:
