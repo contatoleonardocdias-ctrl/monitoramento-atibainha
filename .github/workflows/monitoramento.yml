@@ -3,9 +3,9 @@ name: Monitoramento de Chuva Atibainha
 on:
   schedule:
     # O cron abaixo roda a cada 1 hora (no minuto 0)
-    # 0 * * * * significa: minuto 0, de todas as horas, todos os dias.
-    - cron: '15 * * * *'
-  workflow_dispatch: # Isso permite que você rode o script manualmente para testar
+    # Se quiser mudar para cada 15 min, use: '*/15 * * * *'
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Permite rodar manualmente na aba Actions
 
 jobs:
   verificar_clima:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Executar Script de Monitoramento
         env:
-          # Aqui o GitHub liga os Secrets que você criou às variáveis do Python
+          # Liga os Secrets do GitHub às variáveis do script
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python monitoramento.py
