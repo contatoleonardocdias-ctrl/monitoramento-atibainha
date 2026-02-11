@@ -1,29 +1,31 @@
-name: Monitoramento Atibainha
+name: Monitoramento de Chuva Atibainha
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # Executa automaticamente a cada 15 minutos
-  workflow_dispatch:        # Permite que você execute manualmente clicando num botão
+    # O cron abaixo roda a cada 1 hora (no minuto 0)
+    # 0 * * * * significa: minuto 0, de todas as horas, todos os dias.
+    - cron: '0 * * * *'
+  workflow_dispatch: # Isso permite que você rode o script manualmente para testar
 
 jobs:
-  monitoramento:
+  verificar_clima:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do código
+      - name: Baixar o código do repositório
         uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
+      - name: Instalar o Python
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: '3.10'
 
-      - name: Instalar dependências
+      - name: Instalar bibliotecas necessárias
         run: pip install requests
 
-      - name: Executar script de monitoramento
+      - name: Executar Script de Monitoramento
         env:
-          # É aqui que o GitHub "conecta" os segredos ao seu código Python
+          # Aqui o GitHub liga os Secrets que você criou às variáveis do Python
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python monitoramento.py
