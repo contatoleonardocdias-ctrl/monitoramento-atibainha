@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 # ==================== CONFIGURAÇÕES ====================
-LATITUDE = -23.175636
-LONGITUDE = -46.393416
+LATITUDE = -23.17564739275283
+LONGITUDE = -46.39341450241913
 
 # Busca os valores nos Secrets do GitHub
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -24,7 +24,12 @@ def verificar_chuva():
         # 2. Chuva prevista para a PRÓXIMA HORA
         chuva_prevista = data['hourly']['precipitation'][0]
         
-        agora = datetime.now().strftime('%d/%m/%Y %H:%M')
+       url = (
+    "https://api.open-meteo.com/v1/forecast"
+    f"?latitude={LATITUDE}&longitude={LONGITUDE}"
+    "&current=rain"
+    "&timezone=America/Sao_Paulo"
+)
         
         # Se estiver chovendo agora OU houver previsão de chuva
         if chuva_agora > 0 or chuva_prevista > 0:
