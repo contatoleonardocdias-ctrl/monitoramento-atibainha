@@ -1,37 +1,32 @@
 import requests
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # ==================== CONFIGURAÇÕES ====================
-LATITUDE = -23.17564739275283
-LONGITUDE = -46.39341450241913
+LATITUDE = -23.175636
+LONGITUDE = -46.393416
 
 # Busca os valores nos Secrets do GitHub
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 def verificar_chuva():
-    # URL atualizada para pegar tempo real (current) e previsão (hourly)
+    # URL para tempo real e previsão
     url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&current=precipitation&hourly=precipitation&forecast_days=1"
     
     try:
         response = requests.get(url)
         data = response.json()
         
-        # 1. Chuva acontecendo AGORA (Tempo Real)
         chuva_agora = data['current']['precipitation']
-        
-        # 2. Chuva prevista para a PRÓXIMA HORA
         chuva_prevista = data['hourly']['precipitation'][0]
         
-       url = (
-    "https://api.open-meteo.com/v1/forecast"
-    f"?latitude={LATITUDE}&longitude={LONGITUDE}"
-    "&current=rain"
-    "&timezone=America/Sao_Paulo"
-)
+        # AJUSTE DE HORÁRIO: UTC para São Paulo (-3 horas)
+        fuso_horario = timedelta(hours=-3)
+        agora_sp = datetime.now() + fuso_horario
+        data_formatada = agora_sp.strftime('%d/%m/%Y %H:%M')
         
-        # Se estiver chovendo agora OU houver previsão de chuva
+        # IMPORTANTE: Mude para 'if True:' se quiser forçar um teste agora
         if chuva_agora > 0 or chuva_prevista > 0:
             mensagem = f"⚠️ *ALERTA DE CHUVA - ATIBAINHA*\n\n"
             
@@ -41,12 +36,12 @@ def verificar_chuva():
             if chuva_prevista > 0:
                 mensagem += f"📅 *Previsão:* Esperado {chuva_prevista}mm para a próxima hora.\n"
                 
-            mensagem += f"\n⏰ Verificação: {agora}"
+            mensagem += f"\n⏰ Horário de Brasília: {data_formatada}"
             
             enviar_telegram(mensagem)
-            print(f"Alerta enviado! Real: {chuva_agora}mm / Previsto: {chuva_prevista}mm")
+            print(f"Alerta enviado! {data_formatada}")
         else:
-            print(f"Céu limpo em Atibainha ({agora}). Sem chuva no momento ou na previsão.")
+            print(f"Céu limpo em Atibainha às {data_formatada}. Sem chuva registrada.")
 
     except Exception as e:
         print(f"Erro ao verificar: {e}")
