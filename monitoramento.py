@@ -6,42 +6,48 @@ from datetime import datetime, timedelta
 LATITUDE = -23.175636
 LONGITUDE = -46.393416
 
-# Busca os valores nos Secrets do GitHub
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 def verificar_chuva():
-    # URL para tempo real e previsão
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&current=precipitation&hourly=precipitation&forecast_days=1"
+    # Adicionei 'timezone=America/Sao_Paulo' na URL para a API já resolver o fuso
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&current=precipitation&hourly=precipitation&timezone=America%2FSao_Paulo&forecast_days=1"
     
     try:
         response = requests.get(url)
+        response.raise_for_status() # Garante que o script pare se a API cair
         data = response.json()
         
         chuva_agora = data['current']['precipitation']
-        chuva_prevista = data['hourly']['precipitation'][0]
         
-        # AJUSTE DE HORÁRIO: UTC para São Paulo (-3 horas)
-        fuso_horario = timedelta(hours=-3)
-        agora_sp = datetime.now() + fuso_horario
-        data_formatada = agora_sp.strftime('%d/%m/%Y %H:%M')
+        # Pega a hora atual para encontrar o índice correto na lista 'hourly'
+        hora_atual_iso = datetime.now().strftime('%Y-%m-%dT%H:00')
+        indices = data['hourly']['time']
         
-        # IMPORTANTE: Mude para 'if True:' se quiser forçar um teste agora
-        if true:
+        try:
+            idx = indices.index(hora_atual_iso)
+            chuva_proxima_hora = data['hourly']['precipitation'][idx + 1] if idx + 1 < len(indices) else 0
+        except ValueError:
+            chuva_proxima_hora = 0
+
+        # Horário para o log/mensagem
+        data_formatada = datetime.now().strftime('%d/%m/%Y %H:%M')
+        
+        if chuva_agora > 0 or chuva_proxima_hora > 0:
             mensagem = f"⚠️ *ALERTA DE CHUVA - ATIBAINHA*\n\n"
             
             if chuva_agora > 0:
                 mensagem += f"🌧 *Tempo Real:* Está chovendo {chuva_agora}mm agora!\n"
             
-            if chuva_prevista > 0:
-                mensagem += f"📅 *Previsão:* Esperado {chuva_prevista}mm para a próxima hora.\n"
+            if chuva_proxima_hora > 0:
+                mensagem += f"📅 *Previsão:* Esperado {chuva_proxima_hora}mm para a próxima hora.\n"
                 
-            mensagem += f"\n⏰ Horário de Brasília: {data_formatada}"
+            mensagem += f"\n⏰ Atualizado em: {data_formatada}"
             
             enviar_telegram(mensagem)
             print(f"Alerta enviado! {data_formatada}")
         else:
-            print(f"Céu limpo em Atibainha às {data_formatada}. Sem chuva registrada.")
+            print(f"Céu limpo em Atibainha às {data_formatada}.")
 
     except Exception as e:
         print(f"Erro ao verificar: {e}")
@@ -56,7 +62,7 @@ def enviar_telegram(mensagem):
         }
         requests.post(url, json=payload)
     else:
-        print("Erro: Verifique seus Secrets (TELEGRAM_TOKEN e CHAT_ID).")
+        print("Erro: Verifique seus Secrets.")
 
 if __name__ == "__main__":
     verificar_chuva()
