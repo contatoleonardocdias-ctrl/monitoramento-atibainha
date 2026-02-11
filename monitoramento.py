@@ -5,6 +5,8 @@ from datetime import datetime
 # ==================== CONFIGURAÇÕES ====================
 LATITUDE = -23.175636
 LONGITUDE = -46.393416
+
+# O código busca os valores que você salvou nas "etiquetas" do GitHub
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
@@ -20,20 +22,29 @@ def verificar_chuva():
         
         mensagem = f"📊 *Monitoramento Atibainha*\nData: {agora}\nPrevisão: {chuva_prevista}mm"
 
-        # AQUI ESTAVA O ERRO: Agora a frase está fechada corretamente com aspas
+        # TESTE: Alterado para True para forçar o envio da notificação agora
         if True:
-            mensagem += "\n\n⚠️ *ALERTA:* Chuva detectada!"
+            mensagem += "\n\n🚀 *TESTE DE SISTEMA:* O robô está funcionando!"
             enviar_telegram(mensagem)
         
         print(f"Sucesso: {mensagem}")
 
     except Exception as e:
-        print(f"Erro: {e}")
+        print(f"Erro ao verificar: {e}")
 
 def enviar_telegram(mensagem):
     if TELEGRAM_TOKEN and CHAT_ID:
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-        requests.post(url, json={"chat_id": CHAT_ID, "text": mensagem, "parse_mode": "Markdown"})
+        payload = {
+            "chat_id": CHAT_ID,
+            "text": mensagem,
+            "parse_mode": "Markdown"
+        }
+        response = requests.post(url, json=payload)
+        if response.status_code != 200:
+            print(f"Erro no Telegram: {response.text}")
+    else:
+        print("Erro: TELEGRAM_TOKEN ou CHAT_ID não encontrados nos Secrets!")
 
 if __name__ == "__main__":
     verificar_chuva()
