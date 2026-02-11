@@ -5,8 +5,8 @@ from datetime import datetime
 # ==================== CONFIGURAÇÕES ====================
 LATITUDE = -23.175636
 LONGITUDE = -46.393416
-TELEGRAM_TOKEN = os.getenv("8468573418:AAErjAXPUDXAwRHVdLvhf6JinSOfTJFj-VA")
-CHAT_ID = os.getenv("2038317249")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 def verificar_chuva():
     url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&hourly=precipitation&forecast_days=1"
